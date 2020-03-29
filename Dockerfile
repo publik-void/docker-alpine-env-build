@@ -19,6 +19,7 @@ RUN apk update && \
   rm /etc/motd && touch /etc/motd && \
   mkdir /root/.ssh && chmod 700 /root/.ssh && \
   ssh-keygen -A && \
+  sed -i 's/\/bin\/ash/\/usr\/bin\/fish/g' /etc/passwd && \
   mkdir /root/.parallel && touch /root/.parallel/will-cite && \
   curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim && \
@@ -33,5 +34,6 @@ RUN apk update && \
   fish -c fish_update_completions
 COPY authorized_keys /root/.ssh/
 WORKDIR /root
-ENTRYPOINT /usr/sbin/sshd;/usr/bin/fish
+#ENTRYPOINT /usr/sbin/sshd;/usr/bin/fish
+ENTRYPOINT /usr/sbin/sshd -D
 
