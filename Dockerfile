@@ -1,5 +1,5 @@
 FROM alpine:3.11.5
-EXPOSE 4848
+EXPOSE 22
 RUN apk update && \
   apk add man-pages mdocml less-doc tar-doc && \
   apk add openssh openssh-doc && \
@@ -31,7 +31,6 @@ RUN apk update && \
   /root/.config/tmux && \
   ln -s /root/.config/tmux/tmux.conf /root/.tmux.conf && \
   fish -c fish_update_completions
-#COPY sshd_config /etc/ssh/
 COPY authorized_keys /root/.ssh/
 ENTRYPOINT /usr/sbin/sshd;/usr/bin/fish
 
