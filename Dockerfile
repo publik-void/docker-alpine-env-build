@@ -32,5 +32,6 @@ RUN apk update && \
   ln -s /root/.config/tmux/tmux.conf /root/.tmux.conf && \
   fish -c fish_update_completions
 COPY authorized_keys /root/.ssh/
+WORKDIR /root
 ENTRYPOINT /usr/sbin/sshd;/usr/bin/fish
 
