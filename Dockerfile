@@ -6,6 +6,7 @@ RUN apk update && \
   apk add curl curl-doc && \
   apk add git git-doc && \
   apk add python3 python3-doc && \
+  #apk add cmake cmake-doc && \
   apk add perl perl-doc && \
   apk add mosh mosh-doc && \
   apk add fish fish-doc fish-tools && \
@@ -14,6 +15,8 @@ RUN apk update && \
   apk add botan botan-doc && \
   apk add parallel parallel-doc && \
   apk add libressl libressl-doc && \
+  #apk add openssl openssl-doc && \
+  apk add xz xz-doc && \
   apk add lz4 lz4-doc && \
   echo "root:root" | chpasswd && \
   rm /etc/motd && touch /etc/motd && \
