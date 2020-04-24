@@ -8,6 +8,7 @@ RUN apk update && \
   apk add python3 python3-doc && \
   #apk add cmake cmake-doc && \
   apk add perl perl-doc && \
+  apk add tzdata tzdata-doc && \
   apk add mosh mosh-doc && \
   apk add fish fish-doc fish-tools && \
   apk add tmux tmux-doc && \
@@ -19,6 +20,7 @@ RUN apk update && \
   apk add xz xz-doc && \
   apk add lz4 lz4-doc && \
   echo "root:root" | chpasswd && \
+  ln -s /usr/share/zoneinfo/CET /etc/localtime && \
   rm /etc/motd && touch /etc/motd && \
   mkdir /root/.ssh && chmod 700 /root/.ssh && \
   ssh-keygen -A && \
