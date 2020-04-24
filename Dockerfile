@@ -36,6 +36,8 @@ RUN apk update && \
   git clone https://github.com/publik-void/config-tmux.git \
   /root/.config/tmux && \
   ln -s /root/.config/tmux/tmux.conf /root/.tmux.conf && \
+  git config --global user.name "lasse" && \
+  git config --global user.email "lasse-schloer@servermx.de" && \
   fish -c fish_update_completions
 COPY authorized_keys /root/.ssh/
 WORKDIR /root
