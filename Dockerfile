@@ -5,8 +5,17 @@ RUN apk update && \
   apk add openssh openssh-doc && \
   apk add curl curl-doc && \
   apk add git git-doc && \
+  apk add gfortran && \
+  apk add libstdc++ && \
+  apk add libcdev && \
+  apk add musl-dev && \
+  apk add clang clang-dev clang-doc && \
+  apk add gcc g++ gcc-doc && \
+  apk add lld && \
+  apk add make make-doc && \
   apk add python3 python3-doc && \
-  #apk add cmake cmake-doc && \
+  apk add cmake cmake-doc && \
+  apk add boost-dev boost-doc && \
   apk add perl perl-doc && \
   apk add tzdata tzdata-doc && \
   apk add mosh mosh-doc && \
@@ -38,6 +47,8 @@ RUN apk update && \
   ln -s /root/.config/tmux/tmux.conf /root/.tmux.conf && \
   git config --global user.name "lasse" && \
   git config --global user.email "lasse-schloer@servermx.de" && \
+  python3 -m pip install pynvim && \
+  python3 -m pip install numpy && \
   fish -c fish_update_completions
 COPY authorized_keys /root/.ssh/
 WORKDIR /root
