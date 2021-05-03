@@ -9,6 +9,7 @@ RUN apk update && \
   apk add libstdc++ && \
   apk add libcdev && \
   apk add musl-dev && \
+  apk add libc6-compat && \
   apk add clang clang-dev clang-doc && \
   apk add gcc g++ gcc-doc && \
   apk add lld && \
@@ -47,6 +48,7 @@ RUN apk update && \
   ln -s /root/.config/tmux/tmux.conf /root/.tmux.conf && \
   git config --global user.name "lasse" && \
   git config --global user.email "lasse-schloer@servermx.de" && \
+  ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2 && \
   python3 -m pip install pynvim watchdog && \
   python3 -m pip install numpy && \
   fish -c fish_update_completions
