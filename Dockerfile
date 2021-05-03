@@ -47,7 +47,7 @@ RUN apk update && \
   ln -s /root/.config/tmux/tmux.conf /root/.tmux.conf && \
   git config --global user.name "lasse" && \
   git config --global user.email "lasse-schloer@servermx.de" && \
-  python3 -m pip install pynvim && \
+  python3 -m pip install pynvim watchdog && \
   python3 -m pip install numpy && \
   fish -c fish_update_completions
 COPY authorized_keys /root/.ssh/
