@@ -1,4 +1,4 @@
-FROM alpine:3.11.5
+FROM alpine:3.15.0
 EXPOSE 22
 RUN apk update && \
   apk add man-pages mdocml less-doc tar-doc && \
@@ -14,6 +14,7 @@ RUN apk update && \
   apk add gcc g++ gcc-doc && \
   apk add lld && \
   apk add make make-doc && \
+  apk add ninja ninja-doc ninja-bash-completion && \
   apk add python3 python3-doc && \
   apk add cmake cmake-doc && \
   apk add boost-dev boost-doc && \
