@@ -1,0 +1,31 @@
+= `docker-alpine-env-build`
+Lasse Schloer
+
+This repository contains a docker build for a custom work environment based
+on alpine linux.
+
+To build the image:
+[source, sh]
+----
+# cd into the reposiory
+docker build -t alpine-env:latest .
+----
+
+To deploy a container with custom IP:
+[source, sh]
+----
+docker network create \
+  --driver macvlan \
+  --subnet=192.168.178.0/24 \ # the subnet mask of the parent network
+  --gateway=192.168.178.1 \ # the gateway of the parent network
+  -o parent=eth0 \ # the interface of the parent network
+  lasse-alpine-0-docker-net-0 # the name of the macvlan network
+docker create \
+  --name alpine-env-0-container \ # the container name
+  --hostname lasse-alpine-env-0 \ # the hostname
+  --network lasse-alpine-0-docker-net-0 \ # the name of the macvlan network
+  --ip 192.168.178.192 \ # the container IP
+  -p 192.168.178.192:22:22 \ # publish SSH port on the container IP
+  -v /zdata/data:/root/data \ # custom mounts can be added like this
+  alpine-env
+----
