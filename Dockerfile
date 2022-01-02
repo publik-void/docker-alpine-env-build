@@ -36,7 +36,7 @@ RUN apk update && \
   apk add boost-dev boost-doc && \
   echo "root:root" | chpasswd && \
   ln -s /usr/share/zoneinfo/CET /etc/localtime && \
-  rm /etc/motd && touch /etc/motd && \
+  rm /etc/motd && \
   mkdir /root/.ssh && chmod 700 /root/.ssh && \
   ssh-keygen -A && \
   sed -i 's/\/bin\/ash/\/usr\/bin\/fish/g' /etc/passwd && \
@@ -59,6 +59,7 @@ RUN apk update && \
 #   python3 -m pip install numpy && \
   fish -c fish_update_completions
 COPY authorized_keys /root/.ssh/
+COPY motd /etc/motd
 WORKDIR /root
 #ENTRYPOINT /usr/sbin/sshd;/usr/bin/fish
 ENTRYPOINT /usr/sbin/sshd -D
