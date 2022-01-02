@@ -1,5 +1,5 @@
 = `docker-alpine-env-build`
-Lasse Schloer
+Lasse Schlör
 
 This repository contains a docker build for a custom work environment based
 on alpine linux.
