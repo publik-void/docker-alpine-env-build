@@ -69,12 +69,12 @@ RUN apk update && \
   gunzip /opt/julia.tar.gz && \
   tar -C /opt/ -xf /opt/julia.tar && \
   rm /opt/julia.tar && \
-  echo "Running PlugInstall for vim-plug…" && \
   ln -s /opt/julia-1.7.1/bin/julia /usr/bin/julia && \
   # -> Julia packages
   #julia -e 'using Pkg; Pkg.add(["DataFrames", "Statistics", "StatsBase", "DSP"])' && \
   # -> Setup steps which need to be done after the above
-  nvim -c PlugInstall -c qall && \
+  #echo "Running PlugInstall for vim-plug…" && \
+  #nvim -c PlugInstall -c qall && \ # TODO: crashes at the moment
   fish -c fish_update_completions
 COPY authorized_keys /root/.ssh/
 COPY motd /etc/motd
