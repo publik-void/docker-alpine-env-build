@@ -7,14 +7,16 @@ RUN apk update && \
   apk add git git-doc && \
   apk add gfortran && \
   apk add libstdc++ && \
-  apk add libcdev && \
+  apk add libc-dev && \
   apk add musl-dev && \
   apk add libc6-compat && \
   apk add clang clang-dev clang-doc && \
   apk add gcc g++ gcc-doc && \
   apk add lld && \
   apk add make make-doc && \
-  apk add ninja ninja-doc ninja-bash-completion && \
+# Ninja does not exist for Alpine 3.15.0 at the moment
+# Samurai may be an alternative
+#   apk add ninja ninja-doc ninja-bash-completion && \
   apk add python3 python3-doc && \
   apk add cmake cmake-doc && \
   apk add boost-dev boost-doc && \
