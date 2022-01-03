@@ -2,7 +2,7 @@ FROM alpine:3.15.0
 EXPOSE 22
 RUN apk update && \
   # -> General environment setup
-  apk add man-pages mdocml less-doc tar-doc wget-doc && \
+  apk add mandoc man-pages mandoc-apropos less-doc tar-doc wget-doc && \
   apk add tzdata tzdata-doc && \
   apk add openssh openssh-doc && \
   apk add mosh mosh-doc && \
