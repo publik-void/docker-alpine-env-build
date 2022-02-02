@@ -1,10 +1,12 @@
 FROM alpine:3.15.0
 EXPOSE 22
+# Remember: Comments in Dockerfile need `#` at the *beginning* of the line
 RUN apk update && \
   # -> General environment setup
   apk add mandoc man-pages mandoc-apropos less-doc tar-doc wget-doc && \
   apk add tzdata tzdata-doc && \
   apk add openssh openssh-doc && \
+  # TODO: `mosh` currently supports full coloring only when building from source
   apk add mosh mosh-doc && \
   apk add curl curl-doc && \
   apk add git git-doc && \
@@ -40,9 +42,12 @@ RUN apk update && \
   ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2 && \
   # -> Perl, may be needed for some packages
   apk add perl perl-doc && \
-  # -> CXX/low-level compilation environment, needed for YouCompleteMe and
-  # perhaps other things
+  # -> CXX/low-level compilation and numerical computing environment, needed for
+  # YouCompleteMe and others
   apk add gfortran && \
+  # TODO: I think at least one of `lapack` and `openblas` is needed for scipy
+  apk add lapack && \
+  apk add openblas openblas-doc && \
   apk add libstdc++ && \
   apk add libc-dev && \
   apk add musl-dev && \
@@ -75,10 +80,11 @@ RUN apk update && \
   #julia -e 'using Pkg; Pkg.add(["Memoization", "ThreadSafeDicts", "OrderedCollections", "StatsBase", "Statistics", "PyCall", "DSP", "LinearMaps", "IterativeSolvers", "HypothesisTests", "IntervalSets", "JLD2", "DataFrames", "StructArrays", "LazyArrays", "Optim", "LoopVectorization", "AbstractFFTs", "FFTW", "JSON", "JSON3"])' && \
   # -> Setup steps which need to be done after the above
   #echo "Running PlugInstall for vim-plug…" && \
-  #nvim -c PlugInstall -c qall && \ # TODO: crashes at the moment
+  #nvim -c PlugInstall -c qall && \ TODO: crashes at the moment
   fish -c fish_update_completions
 COPY authorized_keys /root/.ssh/
-COPY id_rsa /root/.ssh/ # Not included in the git repo for obvious reasons
+# `id_rsa` is not included in the git repo for obvious reasons
+COPY id_rsa /root/.ssh/
 COPY id_rsa.pub /root/.ssh/
 COPY motd /etc/motd
 WORKDIR /root
