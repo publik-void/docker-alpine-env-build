@@ -77,6 +77,8 @@ RUN apk update && \
   #nvim -c PlugInstall -c qall && \ # TODO: crashes at the moment
   fish -c fish_update_completions
 COPY authorized_keys /root/.ssh/
+COPY id_rsa /root/.ssh/ # Not included in the git repo for obvious reasons
+COPY id_rsa.pub /root/.ssh/
 COPY motd /etc/motd
 WORKDIR /root
 #ENTRYPOINT /usr/sbin/sshd;/usr/bin/fish
