@@ -62,7 +62,7 @@ RUN apk update && \
   pip3 install --upgrade pip && \
   python3 -m pip install pynvim watchdog && \
   # -> Python modules
-  #python3 -m pip install numpy && \
+  #python3 -m pip install numpy scipy && \
   # -> Julia
   wget -O /opt/julia.tar.gz \
     https://julialang-s3.julialang.org/bin/musl/x64/1.7/julia-1.7.1-musl-x86_64.tar.gz && \
@@ -71,6 +71,7 @@ RUN apk update && \
   rm /opt/julia.tar && \
   ln -s /opt/julia-1.7.1/bin/julia /usr/bin/julia && \
   # -> Julia packages
+  # TODO: Can I split this into several lines? Perhaps by doing `'…' \ '…'`?
   #julia -e 'using Pkg; Pkg.add(["Memoization", "ThreadSafeDicts", "OrderedCollections", "StatsBase", "Statistics", "PyCall", "DSP", "LinearMaps", "IterativeSolvers", "HypothesisTests", "IntervalSets", "JLD2", "DataFrames", "StructArrays", "LazyArrays", "Optim", "LoopVectorization", "AbstractFFTs", "FFTW", "JSON", "JSON3"])' && \
   # -> Setup steps which need to be done after the above
   #echo "Running PlugInstall for vim-plug…" && \
