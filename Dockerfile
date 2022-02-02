@@ -45,9 +45,8 @@ RUN apk update && \
   # -> CXX/low-level compilation and numerical computing environment, needed for
   # YouCompleteMe and others
   apk add gfortran && \
-  # TODO: I think at least one of `lapack` and `openblas` is needed for scipy
-  apk add lapack && \
-  apk add openblas openblas-doc && \
+  # `lapack` and `lapack-dev` are needed for e.g. `scipy`.
+  apk add lapack lapack-dev && \
   apk add libstdc++ && \
   apk add libc-dev && \
   apk add musl-dev && \
@@ -61,7 +60,7 @@ RUN apk update && \
   #apk add ninja ninja-doc ninja-bash-completion && \
   apk add cmake cmake-doc && \
   apk add boost-dev boost-doc && \
-  # -> Python, needed for YouCompleteMe in Neovim
+  # -> Python, needed for YouCompleteMe in (and as provider for) Neovim
   apk add python3 python3-doc python3-dev && \
   apk add py3-pip py3-pip-doc && \
   pip3 install --upgrade pip && \
@@ -79,8 +78,9 @@ RUN apk update && \
   # TODO: Can I split this into several lines? Perhaps by doing `'…' \ '…'`?
   #julia -e 'using Pkg; Pkg.add(["Memoization", "ThreadSafeDicts", "OrderedCollections", "StatsBase", "Statistics", "PyCall", "DSP", "LinearMaps", "IterativeSolvers", "HypothesisTests", "IntervalSets", "JLD2", "DataFrames", "StructArrays", "LazyArrays", "Optim", "LoopVectorization", "AbstractFFTs", "FFTW", "JSON", "JSON3"])' && \
   # -> Setup steps which need to be done after the above
+  # TODO: Doing `PlugInstall` like this crashes at the moment.
   #echo "Running PlugInstall for vim-plug…" && \
-  #nvim -c PlugInstall -c qall && \ TODO: crashes at the moment
+  #nvim -c PlugInstall -c qall && \
   fish -c fish_update_completions
 COPY authorized_keys /root/.ssh/
 # `id_rsa` is not included in the git repo for obvious reasons
