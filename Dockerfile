@@ -71,7 +71,7 @@ RUN apk update && \
   rm /opt/julia.tar && \
   ln -s /opt/julia-1.7.1/bin/julia /usr/bin/julia && \
   # -> Julia packages
-  #julia -e 'using Pkg; Pkg.add(["DataFrames", "Statistics", "StatsBase", "DSP"])' && \
+  #julia -e 'using Pkg; Pkg.add(["Memoization", "ThreadSafeDicts", "OrderedCollections", "StatsBase", "Statistics", "PyCall", "DSP", "LinearMaps", "IterativeSolvers", "HypothesisTests", "IntervalSets", "JLD2", "DataFrames", "StructArrays", "LazyArrays", "Optim", "LoopVectorization", "AbstractFFTs", "FFTW", "JSON", "JSON3"])' && \
   # -> Setup steps which need to be done after the above
   #echo "Running PlugInstall for vim-plug…" && \
   #nvim -c PlugInstall -c qall && \ # TODO: crashes at the moment
