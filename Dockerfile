@@ -12,6 +12,8 @@ RUN apk update && \
   apk add git git-doc && \
   apk add fish fish-doc fish-tools && \
   apk add tmux tmux-doc && \
+  # `ncurses` is needed for coloring in terminals like `screen*` and `tmux*`
+  apk add ncurses ncurses-doc && \
   apk add neovim neovim-doc && \
   apk add ranger ranger-doc && \
   apk add botan botan-doc && \
@@ -24,6 +26,7 @@ RUN apk update && \
   ln -s /usr/share/zoneinfo/CET /etc/localtime && \
   rm /etc/motd && \
   mkdir /root/.ssh && chmod 700 /root/.ssh && \
+  # TODO: `ssh-keygen -A` creates host keys in `/etc/ssh` – do I need that?
   ssh-keygen -A && \
   sed -i 's/\/bin\/ash/\/usr\/bin\/fish/g' /etc/passwd && \
   mkdir /root/.parallel && touch /root/.parallel/will-cite && \
