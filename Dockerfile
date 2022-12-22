@@ -1,6 +1,10 @@
 FROM alpine:3.15.0
 EXPOSE 22
 # Remember: Comments in Dockerfile need `#` at the *beginning* of the line
+
+# TODO: Take a look at this:
+# https://stackoverflow.com/questions/39223249/multiple-run-vs-single-chained-run-in-dockerfile-which-is-better
+
 RUN cd /root/ && apk update && \
 
   # -> General environment setup
