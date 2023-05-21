@@ -153,8 +153,12 @@ RUN cd /root/ && \
     "JSON3", \
   ])'
 
+# -> LaTeX
 RUN cd /root/ && \
-  # Miscellaneous setup \
+  apk add tectonic
+
+# -> Miscellaneous setup
+RUN cd /root/ && \
   echo "root:root" | chpasswd && \
   mkdir -p /root/bin && \
   ln -s /usr/share/zoneinfo/CET /etc/localtime && \
@@ -170,8 +174,10 @@ COPY authorized_keys /root/.ssh/
 COPY id_rsa /root/.ssh/
 COPY id_rsa.pub /root/.ssh/
 
+COPY motd /etc/motd
+
+# -> Git setup
 RUN cd /root/ && \
-  # Git setup \
   git config --global user.name "lasse" && \
   git config --global user.email "lasse-schloer@servermx.de" && \
   # Note: I have trouble getting a git credential helper to run on Alpine. The \
@@ -180,8 +186,8 @@ RUN cd /root/ && \
   git config --global credential.helper cache && \
   ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
+# -> CPCP, Neovim, Tmux and Fish setup
 RUN cd /root/ && \
-  # CPCP, Neovim, Tmux and Fish setup \
   curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim && \
   mkdir -p /root/.config && \
@@ -196,10 +202,10 @@ RUN cd /root/ && \
     /root/.config/tmux && \
   ln -s /root/.config/tmux/tmux.conf /root/.tmux.conf
 
-# Note: I disabled (commented out) the following section, because as of the time
-# of writing this (2023-05-09), it seems there is a new version of mosh and it's
-# available in Alpine 3.17. Hooray!
 # -> Mosh, from source
+# Note: I disabled (commented out) this section, because as of the time of
+# writing this (2023-05-09), it seems there is a new version of mosh and it's
+# available in Alpine 3.17. Hooray!
   # Note: I'm building from source to get the latest version. I did this in the
   # hope that it would enable some features not included in the latest release
   # (which is `mosh` 1.3.2 from 2017 at the time of writing this, 2022-02-03).
@@ -262,8 +268,6 @@ RUN cd /root/ && \
   # manpath, and falls back to some defaults, including `/usr/share/man`, \
   # which I believe is correct. \
   fish -c fish_update_completions
-
-COPY motd /etc/motd
 
 WORKDIR /root
 
