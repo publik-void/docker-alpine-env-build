@@ -11,22 +11,17 @@ EXPOSE 22
 # https://stackoverflow.com/questions/39223249/multiple-run-vs-single-chained-
 # run-in-dockerfile-which-is-better
 
-# -> General packages
+# -> Foundational packages
 RUN cd /root/ && apk update
 RUN cd /root/ && \
   apk add \
     mandoc man-pages mandoc-apropos less-doc tar-doc wget-doc \
     tzdata tzdata-doc \
     openssh openssh-doc \
-    mosh mosh-doc \
     curl curl-doc \
     git git-doc \
-    fish fish-doc fish-tools \
-    tmux tmux-doc \
     # Note: `ncurses` is for coloring in terminals like `screen*` and `tmux*` \
     ncurses ncurses-doc \
-    neovim neovim-doc \
-    ranger ranger-doc \
     botan botan-doc \
     parallel parallel-doc \
     # Note: Using LibreSSL here. \
@@ -65,6 +60,20 @@ RUN cd /root/ && \
 # TODO: Previously, I did this:
 # `ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2`
 # This command produces an error now and I haven't looked into fixing it yet
+
+# -> My interactive "userland"
+RUN cd /root/ &&
+  apk add \
+    mosh mosh-doc \
+    fish fish-doc fish-tools \
+    tmux tmux-doc \
+    neovim neovim-doc \
+    ranger ranger-doc \
+    viu viu-doc
+
+# -> LaTeX
+RUN cd /root/ && \
+  apk add tectonic
 
 # -> Python, needed for YouCompleteMe in (and as provider for) Neovim
 RUN cd /root/ && \
@@ -153,10 +162,6 @@ RUN cd /root/ && \
     "JSON3", \
   ])'
 
-# -> LaTeX
-RUN cd /root/ && \
-  apk add tectonic
-
 # -> Miscellaneous setup
 RUN cd /root/ && \
   echo "root:root" | chpasswd && \
@@ -167,7 +172,10 @@ RUN cd /root/ && \
   # TODO: `ssh-keygen -A` creates host keys in `/etc/ssh` – do I need that? \
   ssh-keygen -A && \
   sed -i 's/\/bin\/ash/\/usr\/bin\/fish/g' /etc/passwd && \
-  mkdir /root/.parallel && touch /root/.parallel/will-cite
+  mkdir /root/.parallel && touch /root/.parallel/will-cite && \
+  printf "\n# %s\n%s" \
+    "If the client sends its terminal's color capability, accept it" \
+    "AcceptEnv COLORTERM" >> /etc/ssh/sshd_config
 
 COPY authorized_keys /root/.ssh/
 # Note: `id_rsa` is not included in the git repo for obvious reasons
