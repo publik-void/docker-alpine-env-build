@@ -68,23 +68,6 @@ RUN cd /root/ && \
 # `ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2`
 # This command produces an error now and I haven't looked into fixing it yet
 
-# {{{1 My interactive "userland"
-RUN cd /root/ && \
-  apk add \
-    mosh mosh-doc \
-    fish fish-doc fish-tools \
-    tmux tmux-doc \
-    neovim neovim-doc \
-    ranger ranger-doc \
-    viu viu-doc \
-    \
-    # Things needed for Neovim: \
-    # NOTE: `efm-langserver` exists on Alpine `edge`, but not 3.18…
-    shellcheck shellcheck-doc \
-    flake8 \
-    ripgrep ripgrep-doc ripgrep-fish-completion \
-    fd fd-doc fd-fish-completion
-
 # {{{1 Working with written documents
 RUN cd /root/ && \
   # NOTE: As of 2023-08-30, no `tectonic-doc` exists.
@@ -196,6 +179,23 @@ COPY id_rsa.pub /root/.ssh/
 COPY motd /etc/motd
 
 COPY .gitconfig /root/
+
+# {{{1 My interactive "userland"
+RUN cd /root/ && \
+  apk add \
+    mosh mosh-doc \
+    fish fish-doc fish-tools \
+    tmux tmux-doc \
+    neovim neovim-doc \
+    ranger ranger-doc \
+    viu viu-doc \
+    \
+    # Things needed for Neovim: \
+    # NOTE: `efm-langserver` exists on Alpine `edge`, but not 3.18…
+    shellcheck shellcheck-doc \
+    py3-flake8 \
+    ripgrep ripgrep-doc ripgrep-fish-completion \
+    fd fd-doc fd-fish-completion
 
 # {{{1 CPCP, Neovim, Tmux and Fish setup
 RUN cd /root/ && \
