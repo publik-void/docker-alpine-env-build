@@ -271,6 +271,7 @@ RUN cd /root/ && \
 
 # {{{1 Setup steps which need to be done after the above
 RUN cd /root/ && \
+  # TODO: Not sure why, but this doesn't seem to work…
   git clone git@github.com:publik-void/home-network-host-list.git && \
   cd home-network-host-list && \
   ./update-etc-hosts.sh && \
