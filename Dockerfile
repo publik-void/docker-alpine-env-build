@@ -191,11 +191,15 @@ RUN cd /root/ && \
     viu viu-doc \
     \
     # Things needed for Neovim: \
-    # NOTE: `efm-langserver` exists on Alpine `edge`, but not 3.18…
     shellcheck shellcheck-doc \
     py3-flake8 \
     ripgrep ripgrep-doc ripgrep-fish-completion \
-    fd fd-doc fd-fish-completion
+    fd fd-doc fd-fish-completion \
+    # NOTE: `efm-langserver` exists on Alpine `edge`, but not 3.18…
+    # Thus we do this workaround, which thankfully is relatively simple.
+    go go-doc && \
+    go install github.com/mattn/efm-langserver@latest && \
+    ln -s /root/go/bin/efm-langserver /root/bin/efm-langserver
 
 # {{{1 CPCP, Neovim, Tmux and Fish setup
 RUN cd /root/ && \
