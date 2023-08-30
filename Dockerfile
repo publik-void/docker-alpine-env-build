@@ -23,11 +23,11 @@ RUN cd /root/ && \
     openssh openssh-doc \
     curl curl-doc \
     git git-doc \
-    # Note: `ncurses` is for coloring in terminals like `screen*` and `tmux*` \
+    # NOTE: `ncurses` is for coloring in terminals like `screen*` and `tmux*` \
     ncurses ncurses-doc \
     botan botan-doc \
     parallel parallel-doc \
-    # Note: Using LibreSSL here. \
+    # NOTE: Using LibreSSL here. \
     #openssl openssl-doc \
     libressl libressl-doc \
     xz xz-doc \
@@ -42,19 +42,19 @@ RUN cd /root/ && \
 RUN cd /root/ && \
   apk add \
     gfortran \
-    # Note: `lapack` and `lapack-dev` are needed for e.g. `scipy`. \
+    # NOTE: `lapack` and `lapack-dev` are needed for e.g. `scipy`. \
     lapack lapack-dev \
     openblas openblas-dev openblas-doc \
     libstdc++ \
     libc-dev \
     musl-dev \
     libc6-compat gcompat \
-    # Note: 2023-05-09: `clang` and subpackages are not available on 3.17.3 \
+    # NOTE: 2023-05-09: `clang` and subpackages are not available on 3.17.3 \
     #clang clang-dev clang-doc \
     gcc g++ gcc-doc \
     lld \
     make make-doc \
-    # Note: Ninja does not exist for Alpine 3.17.3 at the moment \
+    # NOTE: Ninja does not exist for Alpine 3.17.3 at the moment \
     # …Samurai may be an alternative \
     #ninja ninja-doc ninja-bash-completion \
     cmake cmake-doc \
@@ -76,6 +76,7 @@ RUN cd /root/ &&
 
 # -> LaTeX
 RUN cd /root/ && \
+  # NOTE: As of 2023-08-30, no `tectonic-doc` exists.
   apk add tectonic
 
 # -> Python, needed for YouCompleteMe in (and as provider for) Neovim
@@ -99,11 +100,11 @@ RUN cd /root/ && \
 
 # -> Julia
 RUN cd /root/ && \
-  # Note: At the time of writing (2022-02-03), there's no Julia package for \
+  # NOTE: At the time of writing (2022-02-03), there's no Julia package for \
   # Alpine. Hence, we're installing the `musl` Binary manually. This is not \
   # uncommon, since other distros do not necessarily have up-to-date Julia \
   # packages either. \
-  # Note: I'm writing this one on 2023-05-09. Don't know if I'll grow fond of \
+  # NOTE: I'm writing this one on 2023-05-09. Don't know if I'll grow fond of \
   # JuliaUp in the future but at the moment, it seems to not be compatible \
   # with Alpine. The above note is still true. \
   wget -O /opt/julia.tar.gz \
@@ -181,7 +182,7 @@ RUN cd /root/ && \
     "AcceptEnv COLORTERM" >> /etc/ssh/sshd_config
 
 COPY authorized_keys /root/.ssh/
-# Note: `id_rsa` is not included in the git repo for obvious reasons
+# NOTE: `id_rsa` is not included in the git repo for obvious reasons
 COPY id_rsa /root/.ssh/
 COPY id_rsa.pub /root/.ssh/
 
@@ -193,9 +194,10 @@ RUN cd /root/ && \
   # `~/.gitconfig` instead of calling `git config` here \
   git config --global user.name "lasse" && \
   git config --global user.email "lasse-schloer@servermx.de" && \
-  # Note: I have trouble getting a git credential helper to run on Alpine. The \
+  # NOTE: I have trouble getting a git credential helper to run on Alpine. The \
   # `cache` mode at least allows to remember passwords for a short time. \
   # Using SSH instead of HTTPS may help, I think. \
+  # TODO: Add the option `--timeout N` after `cache` \
   git config --global credential.helper cache && \
   ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
@@ -216,10 +218,10 @@ RUN cd /root/ && \
   ln -s /root/.config/tmux/tmux.conf /root/.tmux.conf
 
 # -> Mosh, from source
-# Note: I disabled (commented out) this section, because as of the time of
+# NOTE: I disabled (commented out) this section, because as of the time of
 # writing this (2023-05-09), it seems there is a new version of mosh and it's
 # available in Alpine 3.17. Hooray!
-  # Note: I'm building from source to get the latest version. I did this in the
+  # NOTE: I'm building from source to get the latest version. I did this in the
   # hope that it would enable some features not included in the latest release
   # (which is `mosh` 1.3.2 from 2017 at the time of writing this, 2022-02-03).
   # There may e.g. be better color support. However, at least without additional
@@ -277,7 +279,7 @@ RUN cd /root/ && \
 RUN cd /root/ && \
   echo "Running PlugInstall for vim-plug…" && \
   nvim -c PlugInstall -c qall && \
-  # Note: In the following, `fish` will warn that it is unable to get the \
+  # NOTE: In the following, `fish` will warn that it is unable to get the \
   # manpath, and falls back to some defaults, including `/usr/share/man`, \
   # which I believe is correct. \
   fish -c fish_update_completions
