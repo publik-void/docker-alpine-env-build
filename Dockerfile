@@ -189,6 +189,8 @@ COPY motd /etc/motd
 
 # -> Git setup
 RUN cd /root/ && \
+  # TODO: The Git configuration could be done through direct copying of \
+  # `~/.gitconfig` instead of calling `git config` here \
   git config --global user.name "lasse" && \
   git config --global user.email "lasse-schloer@servermx.de" && \
   # Note: I have trouble getting a git credential helper to run on Alpine. The \
