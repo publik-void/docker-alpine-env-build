@@ -46,7 +46,9 @@ RUN cd /root/ && \
     gfortran \
     # NOTE: `lapack` and `lapack-dev` are needed for e.g. `scipy`. \
     # …at least when building the wheel from source. \
-    lapack lapack-dev \
+    # But `lapack` seems to break `liblapack`, which is required by \
+    # `openblas-dev`. \
+    # lapack lapack-dev \
     openblas openblas-dev openblas-doc \
     libstdc++ \
     libc-dev \
@@ -67,36 +69,39 @@ RUN cd /root/ && \
 # This command produces an error now and I haven't looked into fixing it yet
 
 # {{{1 My interactive "userland"
-RUN cd /root/ &&
+RUN cd /root/ && \
   apk add \
     mosh mosh-doc \
     fish fish-doc fish-tools \
     tmux tmux-doc \
     neovim neovim-doc \
     ranger ranger-doc \
-    viu viu-doc
+    viu viu-doc \
+    \
+    # Things needed for Neovim: \
+    # NOTE: `efm-langserver` exists on Alpine `edge`, but not 3.18…
+    shellcheck shellcheck-doc \
+    flake8 \
+    ripgrep ripgrep-doc ripgrep-fish-completion \
+    fd fd-doc fd-fish-completion
 
-# {{{1 LaTeX
+# {{{1 Working with written documents
 RUN cd /root/ && \
   # NOTE: As of 2023-08-30, no `tectonic-doc` exists.
-  apk add tectonic
+  apk add tectonic pandoc-cli asciidoctor
 
 # {{{1 Python
 RUN cd /root/ && \
+  # NOTE: Not self-upgrading Pip, to maximize compatibility with Alpine/`apk` \
+  # NOTE: Python modules could also be installed via Pip and an index of \
+  # wheels built for Alpine, such as `https://alpine-wheels.github.io/index`, \
+  # but since there are `apk` packages for the Python modules I need, I'll \
+  # stick to those. \
   apk add python3 python3-doc python3-dev \
     py3-pip py3-pip-doc \
-    poetry && \
-  pip3 install --upgrade pip && \
-  python3 -m pip install pynvim watchdog
-
-# {{{1 Python modules
-RUN cd /root/ && \
-  python3 -m pip install \
-    # NOTE: This option adds an index of wheels built for Alpine. I think \
-    # support for these without the extra index is coming, slowly. \
-    --extra-index-url https://alpine-wheels.github.io/index \
-    numpy \
-    scipy
+    poetry \
+    py3-watchdog py3-pynvim \
+    py3-numpy py3-scipy
 
 # {{{1 Julia
 RUN cd /root/ && \
@@ -107,58 +112,60 @@ RUN cd /root/ && \
   # NOTE: I'm writing this one on 2023-05-09. Don't know if I'll grow fond of \
   # JuliaUp in the future but at the moment, it seems to not be compatible \
   # with Alpine. The above note is still true. \
+  JULIA_MAJOR_VERSION_NUMBER="1" && \
+  JULIA_MINOR_VERSION_NUMBER="9" && \
+  JULIA_PATCH_VERSION_NUMBER="0" && \
+  JULIA_MAJOR_VERSION="$JULIA_MAJOR_VERSION_NUMBER" && \
+  JULIA_MINOR_VERSION="$JULIA_MAJOR_VERSION.$JULIA_MINOR_VERSION_NUMBER" && \
+  JULIA_PATCH_VERSION="$JULIA_MINOR_VERSION.$JULIA_PATCH_VERSION_NUMBER" && \
   wget -O /opt/julia.tar.gz \
-    https://julialang-s3.julialang.org/bin/musl/x64/1.8/julia-1.8.5-musl-x86_64.tar.gz && \
+    https://julialang-s3.julialang.org/bin/musl/x64/$JULIA_MINOR_VERSION/julia-$JULIA_PATCH_VERSION-musl-x86_64.tar.gz && \
   gunzip /opt/julia.tar.gz && \
   tar -C /opt/ -xf /opt/julia.tar && \
   rm /opt/julia.tar && \
-  ln -s /opt/julia-1.8.5/bin/julia /usr/bin/julia
+  ln -s /opt/julia-$JULIA_PATCH_VERSION/bin/julia /usr/bin/julia
 
 # {{{1 Julia packages
 RUN cd /root/ && \
   julia -e 'import Pkg; Pkg.add([ \
-\
+    \
     "FileIO", \
     "Match", \
     "Memoization", \
     "LoopVectorization", \
     "PyCall", \
-\
+    \
     "IntervalSets", \
     "LinearMaps", \
     "FixedPointNumbers", \
     "MultiFloats", \
-\
+    \
     "StructArrays", \
     "PooledArrays", \
-    "LazyArrays", \
     "Dictionaries", \
-    "OrderedCollections", \
-    "ThreadSafeDicts", \
-\
+    "DataStructures", \
+    \
     "Tables", \
     "TypedTables", \
     "DataFrames", \
     "SplitApplyCombine", \
-\
+    \
     "StatsBase", \
     "Statistics", \
     "HypothesisTests", \
     "DSP", \
     "AbstractFFTs", \
     "FFTW", \
-    "FastRunningMedian", \
-\
+    \
     "Colors", \
     "Images", \
     "Measures", \
     "Compose", \
     "Gadfly", \
-    "Luxor", \
-\
+    \
     "IterativeSolvers", \
     "Optim", \
-\
+    \
     "JLD2", \
     "CodecZlib", \
     "JSON", \
@@ -183,7 +190,7 @@ RUN cd /root/ && \
 
 COPY authorized_keys /root/.ssh/
 # NOTE: `id_rsa` is not included in the git repo, for obvious reasons
-COPY ../../repo-tokens/authentication-tokens/ssh-key-lasse-alpine-env-0-root/id_rsa /root/.ssh/
+COPY id_rsa /root/.ssh/
 COPY id_rsa.pub /root/.ssh/
 
 COPY motd /etc/motd
@@ -265,6 +272,9 @@ RUN cd /root/ && \
   ./update-etc-hosts.sh && \
   cd .. && \
   rm -r home-network-host-list && \
+  # Start Neovim to let Lazy install the plugins and quit afterwards. \
+  # Also, wait a bit to allow treesitter to install the default languages. \
+  nvim -c "sleep 15 | qall" && \
   poetry completions fish > ~/.config/fish/completions/poetry.fish && \
   # NOTE: In the following, `fish` will warn that it is unable to get the \
   # manpath, and falls back to some defaults, including `/usr/share/man`, \
