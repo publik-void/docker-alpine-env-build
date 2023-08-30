@@ -1,4 +1,6 @@
-FROM alpine:3.17.3
+# vim: foldmethod=marker
+
+FROM alpine:3.18.3
 EXPOSE 22
 
 # Remember:
@@ -11,7 +13,7 @@ EXPOSE 22
 # https://stackoverflow.com/questions/39223249/multiple-run-vs-single-chained-
 # run-in-dockerfile-which-is-better
 
-# -> Foundational packages
+# {{{1 Foundational packages
 RUN cd /root/ && apk update
 RUN cd /root/ && \
   apk add \
@@ -33,29 +35,29 @@ RUN cd /root/ && \
     xz xz-doc \
     lz4 lz4-doc
 
-# -> Perl, because many packages and programs tend to depend on it
+# {{{1 Perl
+# Because many packages and programs tend to depend on it
 RUN cd /root/ && \
   apk add perl perl-doc
 
-# -> CXX/low-level compilation and numerical computing environment, partly
-# needed for YouCompleteMe and others
+# {{{1 CXX/low-level compilation and numerical computing environment
 RUN cd /root/ && \
   apk add \
     gfortran \
     # NOTE: `lapack` and `lapack-dev` are needed for e.g. `scipy`. \
+    # …at least when building the wheel from source. \
     lapack lapack-dev \
     openblas openblas-dev openblas-doc \
     libstdc++ \
     libc-dev \
     musl-dev \
     libc6-compat gcompat \
-    # NOTE: 2023-05-09: `clang` and subpackages are not available on 3.17.3 \
-    #clang clang-dev clang-doc \
-    gcc g++ gcc-doc \
-    lld \
+    # NOTE: `clang` and subpackages are unavailable as of 2023-08-30 \
+    #clang clang-dev clang-doc lld lld-doc \
+    gcc g++ gcc-doc gdb gdb-doc \
     make make-doc \
-    # NOTE: Ninja does not exist for Alpine 3.17.3 at the moment \
-    # …Samurai may be an alternative \
+    # NOTE: `ninja` is unavailable as of 2023-08-30 \
+    # …samurai may be an alternative. \
     #ninja ninja-doc ninja-bash-completion \
     cmake cmake-doc \
     boost-dev boost-doc
@@ -64,7 +66,7 @@ RUN cd /root/ && \
 # `ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2`
 # This command produces an error now and I haven't looked into fixing it yet
 
-# -> My interactive "userland"
+# {{{1 My interactive "userland"
 RUN cd /root/ &&
   apk add \
     mosh mosh-doc \
@@ -74,31 +76,29 @@ RUN cd /root/ &&
     ranger ranger-doc \
     viu viu-doc
 
-# -> LaTeX
+# {{{1 LaTeX
 RUN cd /root/ && \
   # NOTE: As of 2023-08-30, no `tectonic-doc` exists.
   apk add tectonic
 
-# -> Python, needed for YouCompleteMe in (and as provider for) Neovim
+# {{{1 Python
 RUN cd /root/ && \
   apk add python3 python3-doc python3-dev \
-    py3-pip py3-pip-doc && \
+    py3-pip py3-pip-doc \
+    poetry && \
   pip3 install --upgrade pip && \
   python3 -m pip install pynvim watchdog
 
-# -> Python modules
+# {{{1 Python modules
 RUN cd /root/ && \
   python3 -m pip install \
+    # NOTE: This option adds an index of wheels built for Alpine. I think \
+    # support for these without the extra index is coming, slowly. \
+    --extra-index-url https://alpine-wheels.github.io/index \
     numpy \
-    scipy \
-    mne \
-    BCI2kReader
+    scipy
 
-# Building wheels for `numpy` and especially `scipy` in the above takes ages.
-# Maybe I can find a better way. And in the process switch to `conda` or at
-# least virtualenv. (TODO)
-
-# -> Julia
+# {{{1 Julia
 RUN cd /root/ && \
   # NOTE: At the time of writing (2022-02-03), there's no Julia package for \
   # Alpine. Hence, we're installing the `musl` Binary manually. This is not \
@@ -114,10 +114,9 @@ RUN cd /root/ && \
   rm /opt/julia.tar && \
   ln -s /opt/julia-1.8.5/bin/julia /usr/bin/julia
 
-# -> Julia packages
-# TODO: Change `using` to `import` below if I change anything about this anyway
+# {{{1 Julia packages
 RUN cd /root/ && \
-  julia -e 'using Pkg; Pkg.add([ \
+  julia -e 'import Pkg; Pkg.add([ \
 \
     "FileIO", \
     "Match", \
@@ -166,20 +165,21 @@ RUN cd /root/ && \
     "JSON3", \
   ])'
 
-# -> Miscellaneous setup
+# {{{1 Miscellaneous setup
 RUN cd /root/ && \
   echo "root:root" | chpasswd && \
   mkdir -p /root/bin && \
   ln -s /usr/share/zoneinfo/CET /etc/localtime && \
   rm /etc/motd && \
   mkdir /root/.ssh && chmod 700 /root/.ssh && \
-  # TODO: `ssh-keygen -A` creates host keys in `/etc/ssh` – do I need that? \
+  # `ssh-keygen -A` creates host keys in `/etc/ssh`, needed for authentication \
   ssh-keygen -A && \
   sed -i 's/\/bin\/ash/\/usr\/bin\/fish/g' /etc/passwd && \
   mkdir /root/.parallel && touch /root/.parallel/will-cite && \
   printf "\n# %s\n%s" \
     "If the client sends its terminal's color capability, accept it" \
-    "AcceptEnv COLORTERM" >> /etc/ssh/sshd_config
+    "AcceptEnv COLORTERM" >> /etc/ssh/sshd_config && \
+  ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
 COPY authorized_keys /root/.ssh/
 # NOTE: `id_rsa` is not included in the git repo for obvious reasons
@@ -188,36 +188,19 @@ COPY id_rsa.pub /root/.ssh/
 
 COPY motd /etc/motd
 
-# -> Git setup
-RUN cd /root/ && \
-  # TODO: The Git configuration could be done through direct copying of \
-  # `~/.gitconfig` instead of calling `git config` here \
-  git config --global user.name "lasse" && \
-  git config --global user.email "lasse-schloer@servermx.de" && \
-  # NOTE: I have trouble getting a git credential helper to run on Alpine. The \
-  # `cache` mode at least allows to remember passwords for a short time. \
-  # Using SSH instead of HTTPS may help, I think. \
-  # TODO: Add the option `--timeout N` after `cache` \
-  git config --global credential.helper cache && \
-  ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+COPY .gitconfig /root/
 
-# -> CPCP, Neovim, Tmux and Fish setup
+# {{{1 CPCP, Neovim, Tmux and Fish setup
 RUN cd /root/ && \
-  curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim && \
   mkdir -p /root/.config && \
   git clone git@github.com:publik-void/cross-platform-copy-paste.git \
     /root/.config/cross-platform-copy-paste && \
   ln -s /root/.config/cross-platform-copy-paste/cpcp.sh /root/bin/cpcp && \
-  git clone git@github.com:publik-void/config-fish.git \
-    /root/.config/fish && \
-  git clone git@github.com:publik-void/config-nvim.git \
-    /root/.config/nvim && \
-  git clone git@github.com:publik-void/config-tmux.git \
-    /root/.config/tmux && \
-  ln -s /root/.config/tmux/tmux.conf /root/.tmux.conf
+  git clone git@github.com:publik-void/config-fish.git /root/.config/fish && \
+  git clone git@github.com:publik-void/config-nvim.git /root/.config/nvim && \
+  git clone git@github.com:publik-void/config-tmux.git /root/.config/tmux
 
-# -> Mosh, from source
+# {{{1 Mosh, from source
 # NOTE: I disabled (commented out) this section, because as of the time of
 # writing this (2023-05-09), it seems there is a new version of mosh and it's
 # available in Alpine 3.17. Hooray!
@@ -275,10 +258,9 @@ RUN cd /root/ && \
 #  rm -rf /opt/mosh && \
 #  apk del .build-deps
 
-# -> Setup steps which need to be done after the above
+# {{{1 Setup steps which need to be done after the above
 RUN cd /root/ && \
-  echo "Running PlugInstall for vim-plug…" && \
-  nvim -c PlugInstall -c qall && \
+  poetry completions fish > ~/.config/fish/completions/poetry.fish && \
   # NOTE: In the following, `fish` will warn that it is unable to get the \
   # manpath, and falls back to some defaults, including `/usr/share/man`, \
   # which I believe is correct. \

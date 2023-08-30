@@ -1,0 +1,14 @@
+[user]
+  name = Lasse Schlör
+  email = lasse-schloer@servermx.de
+[init]
+  defaultBranch = main
+[core]
+  editor = nvim
+[diff "pandoc"]
+  textconv = pandoc --to=markdown
+  prompt = false
+[alias]
+  wdiff = diff --word-diff=color --unified=1
+[credential]
+  helper = cache --timeout 43200
