@@ -182,8 +182,8 @@ RUN cd /root/ && \
   ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
 COPY authorized_keys /root/.ssh/
-# NOTE: `id_rsa` is not included in the git repo for obvious reasons
-COPY id_rsa /root/.ssh/
+# NOTE: `id_rsa` is not included in the git repo, for obvious reasons
+COPY ../../repo-tokens/authentication-tokens/ssh-key-lasse-alpine-env-0-root/id_rsa /root/.ssh/
 COPY id_rsa.pub /root/.ssh/
 
 COPY motd /etc/motd
@@ -260,6 +260,11 @@ RUN cd /root/ && \
 
 # {{{1 Setup steps which need to be done after the above
 RUN cd /root/ && \
+  git clone git@github.com:publik-void/home-network-host-list.git && \
+  cd home-network-host-list && \
+  ./update-etc-hosts.sh && \
+  cd .. && \
+  rm -r home-network-host-list && \
   poetry completions fish > ~/.config/fish/completions/poetry.fish && \
   # NOTE: In the following, `fish` will warn that it is unable to get the \
   # manpath, and falls back to some defaults, including `/usr/share/man`, \
