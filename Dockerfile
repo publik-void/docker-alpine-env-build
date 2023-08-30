@@ -15,7 +15,10 @@ EXPOSE 22
 RUN cd /root/ && apk update
 RUN cd /root/ && \
   apk add \
-    mandoc man-pages mandoc-apropos less-doc tar-doc wget-doc \
+    mandoc man-pages mandoc-apropos mandoc-doc busybox-doc less-doc tar-doc \
+      wget-doc grep-doc sudo-doc \
+    # TODO: Haven't found out yet how to install man pages for a bunch of \
+    # utilities such as `seq`, `base64`, `tr`, `uniq`, … \
     tzdata tzdata-doc \
     openssh openssh-doc \
     curl curl-doc \
