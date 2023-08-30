@@ -278,7 +278,7 @@ RUN cd /root/ && \
   rm -r home-network-host-list && \
   # Start Neovim to let Lazy install the plugins and quit afterwards. \
   # Also, wait a bit to allow treesitter to install the default languages. \
-  nvim -c "sleep 15 | qall" && \
+  nvim -c "sleep 15 | qall" && echo && \
   poetry completions fish > ~/.config/fish/completions/poetry.fish && \
   # NOTE: In the following, `fish` will warn that it is unable to get the \
   # manpath, and falls back to some defaults, including `/usr/share/man`, \
