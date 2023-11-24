@@ -20,7 +20,7 @@ RUN cd /root/ && \
     mandoc man-pages mandoc-apropos mandoc-doc busybox-doc less-doc tar-doc \
       wget-doc grep-doc sudo-doc \
     # TODO: Haven't found out yet how to install man pages for a bunch of \
-    # utilities such as `seq`, `base64`, `tr`, `uniq`, … \
+    # utilities such as `ls`, `head`, `tail`, `seq`, `base64`, `tr`, `uniq`, … \
     tzdata tzdata-doc \
     openssh openssh-doc \
     curl curl-doc \
