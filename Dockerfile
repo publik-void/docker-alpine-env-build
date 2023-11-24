@@ -171,8 +171,10 @@ RUN cd /root/ && \
     "AcceptEnv COLORTERM" >> /etc/ssh/sshd_config && \
   ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
+# NOTE: `authorzied_keys`, `id_rsa`, and `id_rsa.pub` are not included in the
+# Git repository so that they can be supplied on a case-by-case basis. `id_rsa`
+# should obviously not be included anyways.
 COPY authorized_keys /root/.ssh/
-# NOTE: `id_rsa` is not included in the git repo, for obvious reasons
 COPY id_rsa /root/.ssh/
 COPY id_rsa.pub /root/.ssh/
 
